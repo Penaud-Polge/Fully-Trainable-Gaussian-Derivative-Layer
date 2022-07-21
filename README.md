@@ -2,7 +2,7 @@
 
 ## What is it ?
 
-This github correponds to the Tensorflow implementation of the article
+This github corresponds to the Tensorflow implementation of the article
 
 Valentin Penaud--Polge, Santiago Velasco-Forero, Jesus Angulo,
 Fully Trainable Gaussian Derivative Convolutional Layer,
@@ -10,7 +10,7 @@ Fully Trainable Gaussian Derivative Convolutional Layer,
 
 Please cite this reference if you use this code for your paper !
 
-Roughly spkeaking, the particularity of this layer comes from its filters. 
+Roughly speaking, the particularity of this layer comes from its filters. 
 Each filter is a linear combination of several anisotropic, shifted and rotated
 Gaussian Derivative kernels.
 
@@ -63,12 +63,12 @@ Here are the parameters of the layer:
  * use_bias     - boolean         - whether a bias should be used or not.
 
 
-A little precision about the attribut self.deployed and the functions deploy and to_train:
+A little precision about the attribute "deployed" and the functions "deploy" and "to_train":
 
-Using deploy once your layer is trained allows to freeze the Gaussian kernels. Otherwise the
+Using "deploy" once your layer is trained allows to freeze the Gaussian kernels. Otherwise the
 layer will compute the Gaussian kernels every time you will use it, which is useless if the layer has already been trained.
 
-Nevertheless, is you deployed your layers and afterwards you want to train them a little bit more, you can use the function to_train which will set back the attribut deployed to False. 
+Nevertheless, if you deployed your layers and afterwards you want to train them a little bit more, you can use the function to_train which will set back the attribute "deployed" to False. 
 
 
 
