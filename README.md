@@ -35,10 +35,11 @@ Here are the parameters of the layer:
  * separated    - boolean         - indicates if the linear combination should be separated or not.
                                  
  * trainability - list of boolean - indicates if the Gaussian parameters should be trainable or not.
-                                 example : trainability = [True, False, True]
-                                        -> scales will be trainable
-                                        -> shifts won't be trainable
-                                        -> orientations will be trainable
+ 
+                           &emsp; &emsp;      example : trainability = [True, False, True]
+                           &emsp; &emsp;            -> scales will be trainable
+                           &emsp; &emsp;            -> shifts won't be trainable
+                           &emsp; &emsp;            -> orientations will be trainable
                                         
  * padding      - string          - type of padding
 
@@ -47,12 +48,13 @@ Here are the parameters of the layer:
  * mu_init      - float           - initialization value of the shifts (if random_init = False)
                                  
  * theta_init   - float           - initialization value of the orientation (if random_init = False)
-                                 example : if sigma_init = 1.5, 
-                                           trainability[0] = False and 
-                                           random_init = False then
-                                           the Gaussian Derivative kernels 
-                                           will all have constant scales 
-                                           of value 1.5.
+ 
+                            &emsp; &emsp;    example : if sigma_init = 1.5, 
+                            &emsp; &emsp;             trainability[0] = False and 
+                            &emsp; &emsp;              random_init = False then
+                            &emsp; &emsp;              the Gaussian Derivative kernels 
+                            &emsp; &emsp;             will all have constant scales 
+                            &emsp; &emsp;              of value 1.5.
                                            
  * strides      - tuple of int    - value of the stride
 
