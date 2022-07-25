@@ -14,13 +14,13 @@ Roughly speaking, the particularity of this layer comes from its filters.
 Each filter is a linear combination of several anisotropic, shifted and rotated
 Gaussian Derivative kernels.
 
-## Recquirement
+## Requirement
 
 Tensorflow 2 is recquired to use this code.
 
 ## Some explanations
 
-You will find two python files in this repository: The source code and a notebook showing a simple example showing how to use the proposed layer.
+You will find two python files in this repository: The source code and a notebook showing a simple example on how to use the proposed layer.
 
 Here are the parameters of the layer:
 
