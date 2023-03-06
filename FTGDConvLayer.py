@@ -150,13 +150,13 @@ class FTGDConvLayer(tensorflow.keras.layers.Layer):
     def get_config(self):
         config = super(FTGDConvLayer, self).get_config()
         config.update({
-            "num_filters":self.num_filters,
+            "filters":self.num_filters,
             "kernel_size":self.filter_size,
             'num_basis':self.num_basis,
             'order':self.order,
             'separated':self.separated,
             'trainability':self.trainability,
-            'stride':self.stride,
+            'strides':self.stride,
             'random_init':self.random_init,
             'padding':self.padding_mode,
             'sigma_init':self.sigma_init,
@@ -166,7 +166,7 @@ class FTGDConvLayer(tensorflow.keras.layers.Layer):
         })
         return config
 
-
+@tensorflow.function
 def hermitePolynomials(order, x, sigma):
 
     """
@@ -187,7 +187,7 @@ def hermitePolynomials(order, x, sigma):
         res = tensorflow.math.add(res, term)
     return res
 
-
+@tensorflow.function
 def computeGaussianDerivative(order, x, sigma):
 
     """
@@ -207,7 +207,7 @@ def computeGaussianDerivative(order, x, sigma):
     gaussianDerivative = tensorflow.math.multiply(hermitePart, gaussianPart)
     return gaussianDerivative
 
-
+@tensorflow.function
 def computeGaussianBasis(size, order, sigmas, centroids, thetas):
 
     """
@@ -245,7 +245,7 @@ def computeGaussianBasis(size, order, sigmas, centroids, thetas):
             counter += 1
     return tensorflow.stack(kernels, axis = -1)
 
-
+@tensorflow.function
 def getBases(size, num_basis, order, sigmas, centroids, thetas):
 
     """
@@ -270,7 +270,6 @@ def getBases(size, num_basis, order, sigmas, centroids, thetas):
         
     return tensorflow.stack(basis, axis = 0)
 
-
 def initWeights(input_channels, output_channels, num_basis, order, separated):
 
     """
@@ -291,18 +290,23 @@ def initWeights(input_channels, output_channels, num_basis, order, separated):
     """
     
     numFiltersPerBasis = (order + 1)*(order + 2)/2
-
+    
     if separated:
-        weights1 = tensorflow.Variable(initial_value = tensorflow.random.uniform(shape = (int(num_basis),  int(input_channels), int(numFiltersPerBasis)), minval = -1, maxval = 1, dtype = 'float'), name = 'clWeights1', trainable = True)
-        weights2 = tensorflow.Variable(initial_value = tensorflow.random.uniform(shape = (int(num_basis),  1,1, int(numFiltersPerBasis), int(output_channels/num_basis)), minval = -1, maxval = 1, dtype = 'float'), name = 'clWeights2', trainable = True)
+
+        std_1 = float(np.sqrt(2)/(input_channels+numFiltersPerBasis*num_basis))
+        std_2 = float(np.sqrt(2)/(output_channels+numFiltersPerBasis*num_basis))
+
+        weights1 = tensorflow.Variable(initial_value = tensorflow.random.normal(shape = (int(num_basis),  int(input_channels), int(numFiltersPerBasis)), mean=0.0, stddev= std_1, dtype = 'float'), name = 'clWeights1', trainable = True)
+        weights2 = tensorflow.Variable(initial_value = tensorflow.random.normal(shape = (int(num_basis),  1,1, int(numFiltersPerBasis), int(output_channels/num_basis)), mean=0, stddev=std_2, dtype = 'float'), name = 'clWeights2', trainable = True)
+        
         weights = [weights1, weights2]
 
     else:
         
-        weights = tensorflow.Variable(initial_value = tensorflow.random.uniform(shape = (int(num_basis), int(input_channels),   int(output_channels/num_basis), int(numFiltersPerBasis)), minval = -1, maxval = 1, dtype = 'float'), name = 'clWeights', trainable = True)
+        std_1 = float(np.sqrt(2)/(input_channels+output_channels))
+        weights = tensorflow.Variable(initial_value = tensorflow.random.normal(shape = (int(num_basis), int(input_channels),   int(output_channels/num_basis), int(numFiltersPerBasis)), mean = 0, stddev= std_1, dtype = 'float'), name = 'clWeights', trainable = True)
         
     return weights
-
 
 def initGaussianParameters(num_basis, order, random, trainability, sigma_init, mu_init, theta_init):
 
@@ -340,6 +344,8 @@ def initGaussianParameters(num_basis, order, random, trainability, sigma_init, m
 
     return sigmas, centroids, thetas
 
+
+@tensorflow.function
 def getGaussianFilters(bases, weights, num_basis, input_channels, output_channels, separated):
 
     """
@@ -389,7 +395,7 @@ def getGaussianFilters(bases, weights, num_basis, input_channels, output_channel
 
         return Filters
 
-
+@tensorflow.function
 def computeOutput(filters, inputs, num_basis, separated, padding_mode, stride = (1,1)):
 
     """
